@@ -1,7 +1,7 @@
 import { database } from '@/FirebaseConfig';
 import { get, ref } from 'firebase/database';
 import React, { useEffect } from 'react';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 type Props = {}
 
@@ -23,22 +23,22 @@ const HomeScreen = (props: Props) => {
   useEffect(() => {
     // Fetch classes from the database
     const fetchClasses = async () => {
-      try{
+      try {
         const classesRef = ref(database, 'classes');
         const snapshot = await get(classesRef);
 
-        if(snapshot.exists()) {
+        if (snapshot.exists()) {
           const data = snapshot.val();
-          const classList : ClassItem[] = Object.keys(data).map((key) => ({
+          const classList: ClassItem[] = Object.keys(data).map((key) => ({
             id: key,
             ...data[key],
           }));
           setClasses(classList);
-        } else{
+        } else {
           console.log("No classes found");
           setClasses([]);
         }
-      } catch (error: any){
+      } catch (error: any) {
         console.error("Error fetching classes:", error.message);
       }
     };
@@ -46,19 +46,47 @@ const HomeScreen = (props: Props) => {
     fetchClasses();
   }, []);
 
+  const renderItem = ({ item }: { item: ClassItem }) => (
+   <View style={styles.card}>
+    <View style={styles.cardContent}>
+      <View style={{ flex: 1 }}>
+        <Text style={styles.cardTitle}>{item.name}</Text>
+        <Text style={styles.cardSubtitle}>
+          {item.day_of_week} at {item.time_of_course}
+        </Text>
+        <Text style={styles.cardText}>{item.description}</Text>
+        <View style={styles.cardDetails}>
+          <Text style={styles.detailText}>👨‍🏫 {item.teacher}</Text>
+          <Text style={styles.detailText}>🕒 {item.durationMinutes} min</Text>
+          <Text style={styles.detailText}>💰 ${item.price}</Text>
+          <Text style={styles.detailText}>👥 Max {item.maxCapacity}</Text>
+        </View>
+      </View>
+
+      <TouchableOpacity
+        style={styles.rightButton}
+        onPress={() => {
+          console.log(`Added ${item.name} to cart`);
+          // Replace with real logic!
+        }}
+      >
+        <Text style={styles.rightButtonText}>＋</Text>
+      </TouchableOpacity>
+    </View>
+    </View>
+  );
+
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>Classes</Text>
+      <Text style={styles.heading}>📚 Class Schedule</Text>
       <FlatList
         data={classes}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View style={styles.item}>
-            <Text style={styles.title}>{item.name}</Text>
-            <Text style={styles.schedule}>{item.day_of_week} at {item.time_of_course}</Text>
-          </View>
-        )}
+        renderItem={renderItem}
+        contentContainerStyle={styles.listContent}
+        showsVerticalScrollIndicator={false}
       />
+    
     </View>
   )
 }
@@ -68,28 +96,76 @@ export default HomeScreen
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 50,
+    backgroundColor: '#121212', // dark background
     paddingHorizontal: 20,
-    backgroundColor: '#fff',
+    paddingTop: 40,
   },
   heading: {
-    fontSize: 24,
-    fontWeight: 'bold',
+    fontSize: 28,
+    fontWeight: '700',
     marginBottom: 20,
     textAlign: 'center',
+    color: '#00BCD4', // bright teal accent
   },
-  item: {
-    backgroundColor: '#f2f2f2',
-    padding: 15,
-    marginVertical: 8,
-    borderRadius: 8,
+  listContent: {
+    paddingBottom: 20,
   },
-  title: {
-    fontSize: 18,
-    fontWeight: 'bold',
+  card: {
+    backgroundColor: '#1E1E1E', // slightly lighter dark for cards
+    padding: 16,
+    marginBottom: 16,
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOpacity: 0.4,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 6,
   },
-  schedule: {
+  cardContent: {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'flex-start',
+},
+  cardTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#00E5FF', // bright electric cyan
+    marginBottom: 4,
+  },
+  cardSubtitle: {
     fontSize: 14,
-    color: '#555',
+    color: '#B0BEC5', // soft gray
+    marginBottom: 8,
   },
-})
+  cardText: {
+    fontSize: 14,
+    color: '#ECEFF1', // light text on dark
+    marginBottom: 12,
+  },
+  cardDetails: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    gap: 8,
+  },
+  detailText: {
+    fontSize: 13,
+    color: '#80DEEA', // lighter teal
+  },
+rightButton: {
+  backgroundColor: '#263238', // dark charcoal for subtle contrast
+  paddingVertical: 6,
+  paddingHorizontal: 10,
+  borderRadius: 10,
+  borderWidth: 1,
+  borderColor: '#00BCD4',
+},
+
+rightButtonText: {
+  color: '#00BCD4',
+  fontSize: 18,
+  fontWeight: '700',
+},
+});
+
+

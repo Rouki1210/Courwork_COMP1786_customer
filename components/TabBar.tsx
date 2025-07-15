@@ -90,6 +90,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         paddingTop: 16,
         paddingBottom: 40,
-        backgroundColor: Colors.white,
+        backgroundColor: '#121212', // dark background
     }
 });
