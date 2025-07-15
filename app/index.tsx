@@ -2,11 +2,11 @@ import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { Link, Stack } from "expo-router";
 import React from "react";
-import { Animated, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ImageBackground, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import Reanimated, { FadeInDown, FadeInRight } from "react-native-reanimated";
 import { Colors } from "../constants/Colors";
 
 type Props = {};
-
 const WelcomeScreen = (props: Props) => {
     return (
         <>
@@ -17,25 +17,25 @@ const WelcomeScreen = (props: Props) => {
                 <View style={styles.container}>
                     <LinearGradient colors={["transparent", "rgba(255,255,255,0.8)", "rgba(255,255,255,1)"]} style={styles.background}> 
                         <View style={styles.wrapper}>
-                            <Animated.Text 
+                            <Reanimated.Text 
                                 style={styles.title} 
-                                >
+                                entering={FadeInRight.delay(300).duration(300).springify()}>
                                 Yoga App
-                            </Animated.Text>
-                            <Animated.Text 
+                            </Reanimated.Text>
+                            <Reanimated.Text 
                                 style={styles.description} 
-                            >
+                                entering={FadeInRight.delay(500).duration(300).springify()}>
                                 Welcome to the Yoga App
-                            </Animated.Text>
+                            </Reanimated.Text>
                             <View style={styles.socialLoginWrapper}>
-                                <Animated.View>
+                                <Reanimated.View entering={FadeInDown.delay(700).duration(300).springify()}>
                                     <Link href={"/signin"} asChild>
                                         <TouchableOpacity style={styles.button}>
                                             <Ionicons name="mail-outline" size={20} color={Colors.black} />
                                             <Text style={styles.buttonText}>Continue with Email</Text>
                                         </TouchableOpacity>
                                     </Link>
-                                </Animated.View>
+                                </Reanimated.View>
                             </View>
                             <Text style={styles.registerText}>
                                     Don&apos;t have an account? {""}
@@ -55,7 +55,7 @@ const WelcomeScreen = (props: Props) => {
 
 export default WelcomeScreen;
 
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: "center",
@@ -115,6 +115,6 @@ const styles = StyleSheet.create({
     },
     registerTxtSpan: {
         color: Colors.primary,
-        fontWeight: "500",
+        fontWeight: "600",
     },
 });

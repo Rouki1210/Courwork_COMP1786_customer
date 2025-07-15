@@ -1,12 +1,13 @@
 import React from "react";
 import { StyleSheet, TextInput } from "react-native";
+
 import { Colors } from "../constants/Colors";
 
 type Props = {};
 
-const InputField = (props: Props) => {
+const InputField = (props: React.ComponentProps<typeof TextInput>) => {
     return (
-        <TextInput placeholder='Email Address' placeholderTextColor={Colors.gray} style={styles.inputField} />
+        <TextInput style={styles.inputField} {...props} />
     );
 }
 
