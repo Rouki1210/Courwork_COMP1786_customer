@@ -1,18 +1,43 @@
-import { Ionicons } from '@expo/vector-icons'
-import { router } from 'expo-router'
-import React from 'react'
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { onValue, ref } from 'firebase/database';
+import React, { useEffect } from 'react';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { database } from '../../FirebaseConfig'; // Adjust the import based on your firebase config file
 
 type Props = {}
 
+type User = {
+  id: string;
+  name: string;
+  email: string;
+};
+
 const ProfileScreen = (props: Props) => {
+  const [users, setUser] = React.useState<User[]>([])
+
+  useEffect(() => {
+    const usersRef = ref(database, 'users');
+
+    const unsubscribe = onValue(usersRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const userData = Object.keys(data).map((key) => ({
+          id: key,
+          ...data[key],
+        }));
+        setUser(userData);
+      } else {
+        setUser([]);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   return (
     <View style={styles.container}>
-      <Text>Profile Screen</Text>
-      <TouchableOpacity onPress={() => router.back()}>
-        <Text>Log Out</Text>
-        <Ionicons name='arrow-back' size={24} color='black' />
-      </TouchableOpacity>
+      <FlatList data={users} keyExtractor={(item) => item.id} renderItem={({ item }) => (
+        <Text>{item.name} - {item.email}</Text>
+      )} />
     </View>
   )
 }

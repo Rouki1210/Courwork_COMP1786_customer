@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Link, router, Stack } from 'expo-router';
 import { signInWithEmailAndPassword, User } from "firebase/auth";
 import React, { useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import InputField from '../components/inputField';
 import { Colors } from '../constants/Colors';
 import { auth } from '../FirebaseConfig'; // Adjust the import based on your firebase config file
@@ -17,7 +17,7 @@ const SignInScreen = (props: Props) => {
 
   const handleLogin = async () => {
     if (!email || !password) {
-      alert("Please enter email and password.");
+      Alert.alert("Please enter email and password.");
       return;
     }
     try {
@@ -25,7 +25,7 @@ const SignInScreen = (props: Props) => {
       setUser(userCredential.user);
       router.replace("/(tabs)");
     } catch (error: any) {
-      alert(error.message);
+      Alert.alert('Login failed', `User or password is incorrect.`);
     }
   };
 

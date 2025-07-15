@@ -30,9 +30,15 @@ const SignUpScreen = (props: Props) => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       setUser(userCredential.user);
-      router.replace("/"); // Navigate to home after successful registration
+      router.push({
+        pathname: "/continue",
+        params: { userId: userCredential.user.uid,
+          email: userCredential.user.email,
+        }
+      });
     } catch (error: any) {
-      alert(error.message);
+      console.log("Signup error:", error.message);
+      throw error;
     }
   };
   return (
@@ -65,6 +71,7 @@ const SignUpScreen = (props: Props) => {
           secureTextEntry={true}
           value={confirmPassword}
           onChangeText={setConfirmPassword} />
+        
 
         <TouchableOpacity style={styles.btn} onPress={handleRegister}>
           <Text style={styles.btnText}>Sign Up</Text>
