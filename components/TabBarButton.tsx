@@ -1,7 +1,9 @@
 import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { initialCart } from "../constants/CartItem"; // Assuming CartItem is exported from cart.tsx
 import { Colors } from "../constants/Colors";
 import { icon } from "../constants/Icons";
+
 
 type Props = {
     onPress: Function;
@@ -11,6 +13,7 @@ type Props = {
     routeName: string;
 };
 
+
 const TabBarButton = (props: Props) => {
     const { onPress, onLongPress, isFocused, label, routeName } = props;
     return (
@@ -19,9 +22,9 @@ const TabBarButton = (props: Props) => {
             onLongPress={onLongPress}
             style={styles.tabBarBtn}
         >
-            {routeName === 'cart' && (
+            {routeName === 'cart' && initialCart.length > 0 && (
                 <View style={styles.badgeContainer}>
-                    <Text style={styles.badgeText}>3</Text>
+                    <Text style={styles.badgeText}>{initialCart.length}</Text>
                 </View>
             )}
             {icon[routeName]({

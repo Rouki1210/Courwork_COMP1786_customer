@@ -1,19 +1,9 @@
 import React, { useState } from 'react';
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { CartItem, initialCart } from '../../constants/CartItem'; // Assuming CartItem is exported from cart.tsx
 
 type Props = {};
 
-type CartItem = {
-  id: string;
-  name: string;
-  price: string;
-  teacher: string;
-};
-
-const initialCart: CartItem[] = [
-  { id: '1', name: 'Yoga for Beginners', price: '15', teacher: 'Alice' },
-  { id: '2', name: 'HIIT Training', price: '20', teacher: 'Bob' },
-];
 
 const CartScreen = (props: Props) => {
   const [cartItems, setCartItems] = useState<CartItem[]>(initialCart);

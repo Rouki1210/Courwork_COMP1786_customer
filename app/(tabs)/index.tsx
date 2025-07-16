@@ -17,6 +17,8 @@ type ClassItem = {
   price: string;
 };
 
+
+
 const HomeScreen = (props: Props) => {
   const [classes, setClasses] = React.useState<ClassItem[]>([]);
 
@@ -45,6 +47,7 @@ const HomeScreen = (props: Props) => {
 
     fetchClasses();
   }, []);
+
 
   const renderItem = ({ item }: { item: ClassItem }) => (
    <View style={styles.card}>
