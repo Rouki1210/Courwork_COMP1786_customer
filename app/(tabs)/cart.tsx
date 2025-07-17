@@ -1,15 +1,30 @@
-import React, { useState } from 'react';
+import { loadCart, saveCart } from '@/functions/CartStorage';
+import { useFocusEffect } from '@react-navigation/native';
+import { router } from 'expo-router';
+import React, { useCallback, useState } from 'react';
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { CartItem, initialCart } from '../../constants/CartItem'; // Assuming CartItem is exported from cart.tsx
+import { CartItem } from '../../constants/CartItem'; // Assuming CartItem is exported from cart.tsx
 
 type Props = {};
 
-
 const CartScreen = (props: Props) => {
-  const [cartItems, setCartItems] = useState<CartItem[]>(initialCart);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
-  const handleDelete = (id: string) => {
-    setCartItems((prev) => prev.filter((item) => item.id !== id));
+  useFocusEffect(
+    useCallback(() => {
+      const fetchCart = async () => {
+        const storedCart = await loadCart();
+        setCartItems(storedCart);
+      };
+
+      fetchCart();
+    }, [])
+  );
+
+    const handleDelete = async (id: string) => {
+    const updatedCart = cartItems.filter(item => item.id !== id);
+    setCartItems(updatedCart);              
+    await saveCart(updatedCart);            
   };
 
   const totalPrice = cartItems.reduce(
@@ -19,7 +34,7 @@ const CartScreen = (props: Props) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>🛒 Your Cart</Text>
+      <Text style={styles.heading}>🛒 Your Cart {cartItems.length > 0 ? `(${cartItems.length})` : ''}</Text>
 
       <FlatList
         data={cartItems}
@@ -50,7 +65,10 @@ const CartScreen = (props: Props) => {
       {cartItems.length > 0 && (
         <View style={styles.summary}>
           <Text style={styles.totalText}>Total: ${totalPrice.toFixed(2)}</Text>
-          <TouchableOpacity style={styles.checkoutButton}>
+          <TouchableOpacity
+            style={styles.checkoutButton}
+            onPress={() => router.replace('../completeCheckout')}
+          >
             <Text style={styles.checkoutText}>Proceed to Checkout</Text>
           </TouchableOpacity>
         </View>

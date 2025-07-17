@@ -1,9 +1,14 @@
+import { CartItem } from '@/constants/CartItem';
 import { database } from '@/FirebaseConfig';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { get, ref } from 'firebase/database';
 import React, { useEffect } from 'react';
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+
 type Props = {}
+const CART_STORAGE_KEY = 'user_cart';
+
 
 type ClassItem = {
   id: string;
@@ -21,6 +26,7 @@ type ClassItem = {
 
 const HomeScreen = (props: Props) => {
   const [classes, setClasses] = React.useState<ClassItem[]>([]);
+  const [cartItems, setCartItems] = React.useState<CartItem[]>([]);
 
   useEffect(() => {
     // Fetch classes from the database
@@ -28,7 +34,7 @@ const HomeScreen = (props: Props) => {
       try {
         const classesRef = ref(database, 'classes');
         const snapshot = await get(classesRef);
-
+        
         if (snapshot.exists()) {
           const data = snapshot.val();
           const classList: ClassItem[] = Object.keys(data).map((key) => ({
@@ -44,9 +50,42 @@ const HomeScreen = (props: Props) => {
         console.error("Error fetching classes:", error.message);
       }
     };
-
+    
     fetchClasses();
   }, []);
+  
+
+  const handleAddToCart = (item: ClassItem) => {
+  const newCartItem: CartItem = {
+    id: item.id,
+    name: item.name,
+    price: item.price,
+    teacher: item.teacher,
+  };
+
+  setCartItems((prev) => {
+    const exists = prev.find((i) => i.id === newCartItem.id);
+    if (exists) {
+      alert('This class is already in your cart.');
+      return prev;
+    }
+    return [...prev, newCartItem];
+  });
+};
+useEffect(() => {
+  const saveCart = async () => {
+    try {
+      await AsyncStorage.setItem(
+        CART_STORAGE_KEY,
+        JSON.stringify(cartItems)
+      );
+    } catch (error) {
+      console.error('Error saving cart:', error);
+    }
+  };
+
+  saveCart();
+}, [cartItems]);
 
 
   const renderItem = ({ item }: { item: ClassItem }) => (
@@ -70,7 +109,9 @@ const HomeScreen = (props: Props) => {
         style={styles.rightButton}
         onPress={() => {
           console.log(`Added ${item.name} to cart`);
+          handleAddToCart(item);
           // Replace with real logic!
+
         }}
       >
         <Text style={styles.rightButtonText}>＋</Text>
