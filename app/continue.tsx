@@ -14,10 +14,11 @@ const ContinueScreen = (props: Props) => {
     const { email } = useLocalSearchParams<{ email: string }>();
     const [name, setName] = useState("");
     const [phone, setPhone] = useState("");
+    const [address, setAddress] = useState("");
 
     const handleSave = async() => {
         // Save the user information
-        if (!name || !phone) {
+        if (!name || !phone || !address) {
             alert("Please fill all fields.");
             return;
         }
@@ -34,6 +35,8 @@ const ContinueScreen = (props: Props) => {
                 email: email,
                 phone: phone,
                 role: "CUSTOMER",
+                address: "",
+                avatarUrl: "",
                 createdAt: new Date().toISOString(),
                 cartItems: [],
             });
@@ -76,6 +79,11 @@ const ContinueScreen = (props: Props) => {
                     keyboardType="phone-pad"
                     value={phone}
                     onChangeText={setPhone} />
+                <InputField
+                    placeholder='Address'
+                    placeholderTextColor={Colors.gray}
+                    value={address}
+                    onChangeText={setAddress} />
                 <TouchableOpacity style={styles.btn} onPress={handleSave}>
                     <Text style={styles.btnText}>Save</Text>
                 </TouchableOpacity>
