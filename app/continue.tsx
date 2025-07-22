@@ -2,6 +2,7 @@ import InputField from "@/components/inputField";
 import { Colors } from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
 import { Stack, router, useLocalSearchParams } from "expo-router";
+import { getAuth } from "firebase/auth";
 import { ref, set } from "firebase/database";
 import React, { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -10,7 +11,7 @@ import { database } from "../FirebaseConfig"; // Adjust the import based on your
 type Props = {};
 
 const ContinueScreen = (props: Props) => {
-    const { uid, email } = useLocalSearchParams<{ uid: string, email: string }>();
+    const { email } = useLocalSearchParams<{ email: string }>();
     const [name, setName] = useState("");
     const [phone, setPhone] = useState("");
 
@@ -22,18 +23,28 @@ const ContinueScreen = (props: Props) => {
         }
         // Add save logic
         try {
+            const user = getAuth().currentUser;
+            const uid = user?.uid;
+            const userRef = ref(database, `users/${uid}`);
+            console.log("Saving user profile:", uid, name, email, phone);
             // Save user profile to Realtime Database
-            await set(ref(database, `users/${uid}`), {
+            await set(userRef, {
                 id: uid,
                 name: name,
                 email: email,
                 phone: phone,
                 role: "CUSTOMER",
                 createdAt: new Date().toISOString(),
+                cartItems: [],
             });
 
             alert("Profile saved successfully!");
-            router.replace("/(tabs)");
+            router.push(
+                {
+                    pathname: "/(tabs)",
+                    params: { userId: uid, email: email },
+                }
+            )
         } catch (error: any) {
             alert(error.message);
         }

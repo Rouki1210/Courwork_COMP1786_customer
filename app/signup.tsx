@@ -32,10 +32,11 @@ const SignUpScreen = (props: Props) => {
       setUser(userCredential.user);
       router.push({
         pathname: "/continue",
-        params: { userId: userCredential.user.uid,
+        params: { 
           email: userCredential.user.email,
         }
       });
+      console.log("User registered:", userCredential.user.uid, userCredential.user.email);
     } catch (error: any) {
       console.log("Signup error:", error.message);
       throw error;

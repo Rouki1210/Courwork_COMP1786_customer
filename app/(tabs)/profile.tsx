@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 type Props = {};
@@ -21,6 +21,10 @@ const ProfileScreen = (props: Props) => {
     joinedAt: '2024-06-12',
     avatarUrl: '',
   };
+
+  useEffect(() => {
+    
+  }, []);
 
   return (
     <ScrollView style={styles.container}>

@@ -23,7 +23,15 @@ const SignInScreen = (props: Props) => {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       setUser(userCredential.user);
-      router.replace("/(tabs)");
+      router.push(
+        {
+          pathname: "/(tabs)",
+          params: { 
+            uid: userCredential.user.uid,
+            email: userCredential.user.email,
+          }
+        }
+      );
     } catch (error: any) {
       Alert.alert('Login failed', `User or password is incorrect.`);
     }
