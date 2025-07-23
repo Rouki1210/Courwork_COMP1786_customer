@@ -1,11 +1,13 @@
-import React from 'react';
+import { useLocalSearchParams } from 'expo-router';
+import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 type Props = {}
 
 const NotificationsScreen = (props: Props) => {
   // Example notifications array
-  const notifications = [
+  const params = useLocalSearchParams();
+  const [notifications, setNotifications] = useState([
     {
       id: '1',
       title: 'Class reminder',
@@ -18,7 +20,20 @@ const NotificationsScreen = (props: Props) => {
       message: 'Your payment for Pilates class was successful.',
       badgeCount: 0,
     },
-  ];
+  ]);
+
+    useEffect(() => {
+    if (params?.title && params?.message) {
+      const newNotification = {
+        id: Date.now().toString(),
+        title: String(params.title),
+        message: String(params.message),
+        badgeCount: 1,
+      };
+
+      setNotifications(prev => [newNotification, ...prev]);
+    }
+  }, [params]);
 
   return (
     <View style={styles.container}>

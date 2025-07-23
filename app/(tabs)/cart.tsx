@@ -1,6 +1,9 @@
+import { database } from '@/FirebaseConfig';
 import { loadCart, saveCart } from '@/functions/CartStorage';
 import { useFocusEffect } from '@react-navigation/native';
 import { router } from 'expo-router';
+import { getAuth } from 'firebase/auth';
+import { ref, set } from 'firebase/database';
 import React, { useCallback, useState } from 'react';
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { CartItem } from '../../constants/CartItem'; // Assuming CartItem is exported from cart.tsx
@@ -20,6 +23,23 @@ const CartScreen = (props: Props) => {
       fetchCart();
     }, [])
   );
+
+  const handlCheckout = async () => {
+    const auth = getAuth();
+    const user = auth.currentUser;
+
+    try{
+      const userRef = ref(database, `users/${user?.uid}/cartItems`);
+      await set(userRef, cartItems);
+
+      await saveCart(cartItems);
+      router.replace('../completeCheckout');
+    } catch (error) {
+      console.error('Error during checkout:', error);
+    }
+  }
+
+
 
     const handleDelete = async (id: string) => {
     const updatedCart = cartItems.filter(item => item.id !== id);
@@ -67,7 +87,7 @@ const CartScreen = (props: Props) => {
           <Text style={styles.totalText}>Total: ${totalPrice.toFixed(2)}</Text>
           <TouchableOpacity
             style={styles.checkoutButton}
-            onPress={() => router.replace('../completeCheckout')}
+            onPress={handlCheckout}
           >
             <Text style={styles.checkoutText}>Proceed to Checkout</Text>
           </TouchableOpacity>

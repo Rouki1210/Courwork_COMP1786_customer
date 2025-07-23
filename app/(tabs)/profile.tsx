@@ -13,6 +13,7 @@ type Customer = {
   address: string;
   createdAt: string;
   avatarUrl?: string;
+  itemCart?: string[];
 };
 
 const ProfileScreen = (props: Props) => {
@@ -116,9 +117,11 @@ const saveProfileChanges = async () => {
               : 'N/A'}
           </Text>
         </View>
+        
         <TouchableOpacity style={styles.editButton} onPress={openEditModal}>
           <Text style={styles.editButtonText}>Edit Profile</Text>
         </TouchableOpacity>
+        
       </View>
 
       <Modal
