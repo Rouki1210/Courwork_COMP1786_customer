@@ -3,7 +3,7 @@ import { loadCart, saveCart } from '@/functions/CartStorage';
 import { useFocusEffect } from '@react-navigation/native';
 import { router } from 'expo-router';
 import { getAuth } from 'firebase/auth';
-import { ref, set } from 'firebase/database';
+import { push, ref, set } from 'firebase/database';
 import React, { useCallback, useState } from 'react';
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { CartItem } from '../../constants/CartItem'; // Assuming CartItem is exported from cart.tsx
@@ -29,17 +29,32 @@ const CartScreen = (props: Props) => {
     const user = auth.currentUser;
 
     try{
+      // Save cart items to the database
       const userRef = ref(database, `users/${user?.uid}/cartItems`);
       await set(userRef, cartItems);
 
+      // Create a notification for the user
+      const notificationRef = ref(database, `users/${user?.uid}/notifications`);
+      const newNotification = push(notificationRef);
+      await set(newNotification, {
+        title: 'Checkout Successful',
+        message: 'Your order has been placed successfully.',
+        badgeCount: 1,
+        createdAt: new Date().toISOString(),
+      });
+
+      // Optionally, you can navigate to a confirmation screen
       await saveCart(cartItems);
       router.replace('../completeCheckout');
-    } catch (error) {
+
+      // Clear the cart after checkout
+      setCartItems([]); 
+    } 
+    // If there's an error, you can handle it here
+    catch (error) {
       console.error('Error during checkout:', error);
     }
-  }
-
-
+  };
 
     const handleDelete = async (id: string) => {
     const updatedCart = cartItems.filter(item => item.id !== id);

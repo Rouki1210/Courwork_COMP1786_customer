@@ -1,39 +1,54 @@
-import { useLocalSearchParams } from 'expo-router';
+import { getAuth } from 'firebase/auth';
+import { child, get, ref } from 'firebase/database';
 import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { database } from '../../FirebaseConfig'; // Adjust the import path as necessary
 
 type Props = {}
 
+type NotificationItem = {
+  id: string;
+  title: string;
+  message: string;
+  badgeCount: number;
+  createdAt?: string;
+};
+
 const NotificationsScreen = (props: Props) => {
-  // Example notifications array
-  const params = useLocalSearchParams();
-  const [notifications, setNotifications] = useState([
-    {
-      id: '1',
-      title: 'Class reminder',
-      message: 'Yoga class starts in 30 minutes.',
-      badgeCount: 1,
-    },
-    {
-      id: '2',
-      title: 'Payment successful',
-      message: 'Your payment for Pilates class was successful.',
-      badgeCount: 0,
-    },
-  ]);
+  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const auth = getAuth();
+        const user = auth.currentUser;
+        const snapshot = await get(child(ref(database), `users/${user?.uid}/notifications`));
 
-    useEffect(() => {
-    if (params?.title && params?.message) {
-      const newNotification = {
-        id: Date.now().toString(),
-        title: String(params.title),
-        message: String(params.message),
-        badgeCount: 1,
-      };
-
-      setNotifications(prev => [newNotification, ...prev]);
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          console.log('Notifications data:', data);
+          const formattedNotifications: NotificationItem[] = Object.entries(data).map(
+          ([key, value]: [string, any]) => ({
+            id: key,
+            title: value.title ,
+            message: value.message,
+            badgeCount: value.badgeCount ?? 0,
+            createdAt: value.createdAt ?? undefined, // Optional
+          })
+        );
+          console.log('Formatted notifications:', formattedNotifications);
+          setNotifications(formattedNotifications);
+        } else {
+          console.log('No notifications found');
+        setNotifications([]);
+      }
+    } catch (error) {
+      console.error('Error fetching notifications:', error);
     }
-  }, [params]);
+  };
+
+    fetchNotifications();
+  }, []);
+
 
   return (
     <View style={styles.container}>
