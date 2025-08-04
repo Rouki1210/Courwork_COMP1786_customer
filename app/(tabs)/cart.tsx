@@ -33,6 +33,16 @@ const CartScreen = (props: Props) => {
       const userRef = ref(database, `users/${user?.uid}/cartItems`);
       await set(userRef, cartItems);
 
+
+    const orderRef = push(ref(database, `orders`)); // user-specific orders
+    await set(orderRef, {
+      items: cartItems,
+      totalPrice: totalPrice,
+      createdAt: new Date().toISOString(),
+      status: 'pending',
+      userId: user?.uid,
+    });
+
       // Create a notification for the user
       const notificationRef = ref(database, `users/${user?.uid}/notifications`);
       const newNotification = push(notificationRef);

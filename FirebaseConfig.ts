@@ -5,13 +5,13 @@ import { getDatabase } from "firebase/database";
 
 // Firebase config
 const firebaseConfig = {
-  apiKey: process.env.FIREBASE_API_KEY,
-    authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-    databaseURL: process.env.FIREBASE_DATABASE_URL,
-    projectId: process.env.FIREBASE_PROJECT_ID,
-    storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
-    appId: process.env.FIREBASE_APP_ID
+  apiKey: "AIzaSyBZeLQhaVn13V7aRJRXzGp4fCO2utWE0o4",
+  authDomain: "my-application-f122d.firebaseapp.com",
+  databaseURL: "https://my-application-f122d-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "my-application-f122d",
+  storageBucket: "my-application-f122d.firebasestorage.app",
+  messagingSenderId: "601220760885",
+  appId: "1:601220760885:web:5de64c53ddedef62adb87c"
 };
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
